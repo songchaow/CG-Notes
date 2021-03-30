@@ -34,7 +34,7 @@ https://en.wikipedia.org/wiki/Gimbal_lock
 
 如果我们使用这3个float去描述一个物体的旋转状态。则会存在某些状态下，我们对这些状态的修改只能在两个维度上进行，少了一个旋转维度。当然，我们可以先在两个维度上把状态修改了（解除锁定了），再去达到我们要的状态。
 
-用另一种方式去解释：我们在锁的状态下，没办法在该点为某些旋转的操作求梯度。
+用另一种方式去解释：我们在锁的状态下，没办法在该点为某些方向的旋转求梯度。
 
 
 
@@ -48,7 +48,7 @@ https://en.wikipedia.org/wiki/Gimbal_lock
 
 此节的讨论是平台无关的。我们先仅仅讨论矩阵的数学表示，暂忽略这些矩阵是怎么存储的。
 
-##  Camera State
+##  摄像机的状态表示
 
 The final purpose of a camera in real time rendering, is to provide two transforms: `world2cam` and `cam2ndc`. Both transforms are expressed in Matrix4x4 form.
 
@@ -56,9 +56,13 @@ However, to support user interaction, a camera state is usually maintained inter
 
 实时渲染中摄像机的最终目的，是提供变换：`world2cam` and `cam2ndc`. 它们都是Matrix4x4形式。
 
-如果直接使用矩阵作为状态，并通过矩阵乘法对该状态加以修改，该旋转矩阵会迅速失真，因为有数值误差。所以需要有不失真的状态。
+如果直接使用矩阵作为状态，并通过矩阵乘法对该状态加以修改，该旋转矩阵会迅速失真，因为有数值误差。所以需要有不失真的状态，再从该状态表示成Matrix4x4。
 
-欧拉角、四元数都是描述旋转操作（或者旋转状态）的不失真的好的表示。
+欧拉角、四元数都是描述旋转操作（或者旋转状态）的不失真的好的表示。对于摄像机而言，完全可以直接用正则化后的view vector作为状态。
+
+> 四元数适合用于描述增量的一个”旋转操作“。而描述view vector的状态，四元数其实不是很直观，大材小用、冗余了。
+>
+> 在其他三个自由度的旋转情形，四元数用来描述旋转状态还是很合适的。
 
 User interaction modifies the state, before the two transform matrices can be converted from the camera state.
 
